@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ScheduleActivity"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Name Of Exercise"
+        android:id="@+id/title" />
+
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:id="@+id/detail_image"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/ic_launcher"/>
+    <Button
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="6dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnStart"
+        android:text="Begin"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="8dp"
+        android:layout_centerHorizontal="true"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_above="@+id/btnStart"
+        android:textSize="30sp"
+        android:id="@+id/timer"
+        android:layout_centerHorizontal="true"
+        />
+
+</RelativeLayout>
