@@ -8,14 +8,50 @@
     android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar"
     android:background="@color/colorActionBar">
 
-    <TextClock
-        android:id="@+id/text_clock"
-        android:visibility="visible"
-        android:textColor="@android:color/white"
-        android:textSize="20sp"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:targetApi="jelly_bean_mr1"
-        android:format12Hour="hh:mm" />
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="10dp">
+            <TextClock
+                android:id="@+id/text_clock"
+                android:visibility="visible"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:targetApi="jelly_bean_mr1"
+                android:format12Hour="hh:mm" />
+
+            <ImageView
+                android:id="@+id/btnMenuToolbar"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/menu_toolbar"
+                android:layout_marginLeft="170dp"/>
+
+            <ImageView
+                android:id="@+id/btnSettingsToolbar"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/settings_toolbar"
+                android:layout_marginLeft="30dp"/>
+
+            <ImageView
+                android:id="@+id/btnSound"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/sound_toolbar"
+                android:layout_marginLeft="30dp"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+
 
 </android.support.v7.widget.Toolbar>

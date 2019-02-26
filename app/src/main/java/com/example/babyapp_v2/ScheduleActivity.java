@@ -32,11 +32,9 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        exercisesList.add(new Exercises(R.drawable.a2, "first"));
-        exercisesList.add(new Exercises(R.drawable.a3, "second"));
-        exercisesList.add(new Exercises(R.drawable.a3, "third"));
-        exercisesList.add(new Exercises(R.drawable.a3, "fourth"));
-        exercisesList.add(new Exercises(R.drawable.a3, "fifth"));
+        exercisesList.add(new Exercises(R.drawable.a2, "first exercise"));
+        exercisesList.add(new Exercises(R.drawable.a4, "second exercise"));
+        exercisesList.add(new Exercises(R.drawable.a5, "third exercise"));
 
 
     }

@@ -1,6 +1,5 @@
 package com.example.babyapp_v2;
 
-import android.annotation.SuppressLint;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,25 +9,95 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.example.babyapp_v2.Database.BabyAppDB;
 import com.example.babyapp_v2.Model.Exercises;
 import com.example.babyapp_v2.Utils.Common;
-
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
+
 
 public class StartActivity extends AppCompatActivity {
 
-    Button btnStart,btnNext;
-    ImageView ex_image;
-    TextView txtGetReady, txtCountDown, txtTimer, ex_name;
-    ProgressBar progressBar;
-    LinearLayout layoutGetReady;
-    int ex_id = 0;
+    private Button startButton, btnNext, btnPrev, btnStop;
+
+    private ImageView ex_image;
+
+    private TextView getReadyText, timerText, exerciseName;
+
+    private ProgressBar progressBar;
+
+    private LinearLayout getReadyLayout;
+
+    private int ex_id = 0;
+
     List<Exercises> List = new ArrayList<>();
+
+
     BabyAppDB babyAppDB;
+
+
+    CountDownTimer exerciseEasyModeCountDown = new CountDownTimer(Common.TIME_LIMIT_EASY, 1000) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+            timerText.setText("" + (millisUntilFinished / 1000));
+        }
+
+        @Override
+        public void onFinish() {
+            if (ex_id < List.size() - 1) {
+                ex_id++;
+
+                progressBar.setProgress(ex_id);
+
+                timerText.setText("");
+
+                setExerciseInformation(ex_id);
+            } else {
+                showDone();
+            }
+        }
+    };
+
+    CountDownTimer exerciseMediumModeCountDown = new CountDownTimer(Common.TIME_LIMIT_MEDIUM, 1000) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+            timerText.setText("" + (millisUntilFinished / 1000));
+        }
+
+        @Override
+        public void onFinish() {
+            if (ex_id < List.size() - 1) {
+                ex_id++;
+                progressBar.setProgress(ex_id);
+                timerText.setText("");
+                setExerciseInformation(ex_id);
+            } else {
+                showDone();
+            }
+        }
+    };
+
+    CountDownTimer exerciseHardModeCountDown = new CountDownTimer(Common.TIME_LIMIT_HARD, 1000) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+            timerText.setText("" + (millisUntilFinished / 1000));
+        }
+
+        @Override
+        public void onFinish() {
+            if (ex_id < List.size() - 1) {
+                ex_id++;
+
+                progressBar.setProgress(ex_id);
+
+                timerText.setText("");
+
+                setExerciseInformation(ex_id);
+            } else {
+                showDone();
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,289 +105,167 @@ public class StartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start);
 
         initData();
+
         babyAppDB = new BabyAppDB(this);
 
+        startButton = (Button) findViewById(R.id.start_button);
 
-        btnStart = (Button)findViewById(R.id.btnStart2);
-        ex_image = (ImageView)findViewById(R.id.detail_imageS);
-        txtCountDown = (TextView)findViewById(R.id.txtCountdown);
-        txtGetReady = (TextView)findViewById(R.id.txtGetReady);
-        txtTimer = (TextView)findViewById(R.id.txtTimer);
-        ex_name = (TextView)findViewById(R.id.title2);
-        layoutGetReady = (LinearLayout) findViewById(R.id.layout_getReady);
-        progressBar = (ProgressBar)findViewById(R.id.progressBar);
+        ex_image = (ImageView) findViewById(R.id.image_detail);
 
+        getReadyText = (TextView) findViewById(R.id.get_ready_text);
+
+        timerText = (TextView) findViewById(R.id.timer);
+        exerciseName = findViewById(R.id.title);
+
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+
+        getReadyLayout = (LinearLayout) findViewById(R.id.get_ready_layout);
+
+        // Set data
         progressBar.setMax(List.size());
 
-        setExercisesInfo(ex_id);
+        setExerciseInformation(ex_id);
 
-        btnNext = (Button)findViewById(R.id.btnNext) ;
+        btnNext = findViewById(R.id.btnNext);
+        btnStop = findViewById(R.id.btnStop);
+        btnStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timerText.setVisibility(View.INVISIBLE);
+                if (babyAppDB.getSettingMode() == 0) {
+                    exerciseEasyModeCountDown.cancel();
+                } else if (babyAppDB.getSettingMode() == 1) {
+                    exerciseMediumModeCountDown.cancel();
+                } else if (babyAppDB.getSettingMode() == 2) {
+                    exerciseHardModeCountDown.cancel();
+                }
+            }
+        });
+        btnPrev = findViewById(R.id.btnPrev);
+        btnPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ex_image.setVisibility(View.VISIBLE);
+                startButton.setVisibility(View.VISIBLE);
+                getReadyLayout.setVisibility(View.INVISIBLE);
+                if (babyAppDB.getSettingMode() == 0) {
+                    exerciseEasyModeCountDown.cancel();
+                } else if (babyAppDB.getSettingMode() == 1) {
+                    exerciseMediumModeCountDown.cancel();
+                } else if (babyAppDB.getSettingMode() == 2) {
+                    exerciseHardModeCountDown.cancel();
+                }
+                    ex_id--;
+                    if(ex_id<0)
+                        ex_id=0;
+
+                    progressBar.setProgress(ex_id);
+
+                    timerText.setText("");
+                ex_image.setImageResource(List.get(ex_id).getImage_id());
+                exerciseName.setText(List.get(ex_id).getName());
+
+            }
+        });
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(babyAppDB.getSettingMode()==0)
-                        exercisesEasyModeCountdown.cancel();
-                    else if(babyAppDB.getSettingMode()==1)
-                        exercisesMediumModeCountdown.cancel();
-                    else if(babyAppDB.getSettingMode()==2)
-                        exercisesHardModeCountdown.cancel();
+                    if (ex_id < List.size()) {
+                        ex_image.setVisibility(View.VISIBLE);
+                        startButton.setVisibility(View.VISIBLE);
 
-                    resetTimeCountdown.cancel();
+                        getReadyLayout.setVisibility(View.INVISIBLE);
 
-                    if(ex_id<List.size())
-                    {
-//                        showRestTime();
-                        ex_id++;
-                        progressBar.setProgress(ex_id);
-                        txtTimer.setText("");
+                        if (babyAppDB.getSettingMode() == 0) {
+                            exerciseEasyModeCountDown.cancel();
+                        } else if (babyAppDB.getSettingMode() == 1) {
+                            exerciseMediumModeCountDown.cancel();
+                        } else if (babyAppDB.getSettingMode() == 2) {
+                            exerciseHardModeCountDown.cancel();
+                        }
+                        if (ex_id < List.size() - 1) {
+                            ex_id++;
+
+                            progressBar.setProgress(ex_id);
+
+                            timerText.setText("");
+                        } else {
+                            showDone();
+                        }
+
+                        ex_image.setImageResource(List.get(ex_id).getImage_id());
+                        exerciseName.setText(List.get(ex_id).getName());
+                    } else {
+                        showDone();
                     }
-                    else
-                        showFinished();
             }
         });
 
-        btnStart.setOnClickListener(new View.OnClickListener() {
+        startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showExercises();
-
-//                if(btnStart.getText().toString().toLowerCase().equals("start"))
-//                {
-//                    showGetReady();
-//                    btnStart.setText("Done");
-//
-//                }
-//                else if(btnStart.getText().toString().toLowerCase().equals("done"))
-//                {
-//                    if(babyAppDB.getSettingMode()==0)
-//                        exercisesEasyModeCountdown.cancel();
-//                    else if(babyAppDB.getSettingMode()==1)
-//                        exercisesMediumModeCountdown.cancel();
-//                    else if(babyAppDB.getSettingMode()==2)
-//                        exercisesHardModeCountdown.cancel();
-//
-//                    resetTimeCountdown.cancel();
-//
-//                    if(ex_id<List.size())
-//                    {
-//                        showRestTime();
-//                        ex_id++;
-//                        progressBar.setProgress(ex_id);
-//                        txtTimer.setText("");
-//                    }
-//                    else
-//                        showFinished();
-//                }
-//                else
-//                {
-//                    if(babyAppDB.getSettingMode()==0)
-//                        exercisesEasyModeCountdown.cancel();
-//                    else if(babyAppDB.getSettingMode()==1)
-//                        exercisesMediumModeCountdown.cancel();
-//                    else if(babyAppDB.getSettingMode()==2)
-//                        exercisesHardModeCountdown.cancel();
-//
-//                    resetTimeCountdown.cancel();
-//
-//                    if (ex_id<List.size())
-//                        setExercisesInfo(ex_id);
-//                    else
-//                        showFinished();
-//                }
-//
-
+                timerText.setVisibility(View.VISIBLE);
             }
         });
-        
     }
 
-    private void showRestTime() {
-        ex_image.setVisibility(View.INVISIBLE);
-        txtTimer.setVisibility(View.INVISIBLE);
-        btnStart.setVisibility(View.VISIBLE);
-        txtCountDown.setVisibility(View.VISIBLE);
-        btnStart.setText("Skip");
-        layoutGetReady.setVisibility(View.VISIBLE);
-        txtGetReady.setText("Rest");
-        resetTimeCountdown.start();
-    }
-
-    private void showGetReady() {
-        ex_image.setVisibility(View.INVISIBLE);
-        btnStart.setVisibility(View.INVISIBLE);
-        btnNext.setVisibility(View.INVISIBLE);
-        txtTimer.setVisibility(View.VISIBLE);
-
-        layoutGetReady.setVisibility(View.VISIBLE);
-        txtGetReady.setText("Get Ready!");
-        new CountDownTimer(3000,1000)
-        {
-
-            @Override
-            public void onTick(long l) {
-                txtTimer.setText(""+(l/1000));
-
-            }
-
-            @Override
-            public void onFinish() {
-                showExercises();
-
-            }
-        }.start();
-    }
 
     private void showExercises() {
-        if(ex_id<List.size())
-        {
+        if (ex_id < List.size()) {
             ex_image.setVisibility(View.VISIBLE);
-            btnStart.setVisibility(View.VISIBLE);
-            btnNext.setVisibility(View.VISIBLE);
-            layoutGetReady.setVisibility(View.INVISIBLE);
+            startButton.setVisibility(View.VISIBLE);
 
-            if(babyAppDB.getSettingMode()==0)
-                exercisesEasyModeCountdown.start();
-            else if(babyAppDB.getSettingMode()==1)
-                exercisesMediumModeCountdown.start();
-            else if(babyAppDB.getSettingMode()==2)
-                exercisesHardModeCountdown.start();
+            getReadyLayout.setVisibility(View.INVISIBLE);
 
-
+            if (babyAppDB.getSettingMode() == 0) {
+                exerciseEasyModeCountDown.start();
+            } else if (babyAppDB.getSettingMode() == 1) {
+                exerciseMediumModeCountDown.start();
+            } else if (babyAppDB.getSettingMode() == 2) {
+                exerciseHardModeCountDown.start();
+            }
 
             ex_image.setImageResource(List.get(ex_id).getImage_id());
-            ex_name.setText(List.get(ex_id).getName());
-
+            exerciseName.setText(List.get(ex_id).getName());
+        } else {
+            showDone();
         }
-        else
-            showFinished();
     }
 
-    private void showFinished() {
+    private void showDone() {
         ex_image.setVisibility(View.INVISIBLE);
-        btnStart.setVisibility(View.INVISIBLE);
-        txtTimer.setVisibility(View.INVISIBLE);
-        layoutGetReady.setVisibility(View.VISIBLE);
-        txtGetReady.setText("Finished!");
-        txtCountDown.setText("All exercises done");
+        startButton.setVisibility(View.INVISIBLE);
+        timerText.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
+        exerciseName.setVisibility(View.INVISIBLE);
+        btnNext.setVisibility(View.INVISIBLE);
+        btnPrev.setVisibility(View.INVISIBLE);
+        btnStop.setVisibility(View.INVISIBLE);
 
-//        babyAppDB.saveDay(""+ Calendar.getInstance().getTimeInMillis());
+        getReadyLayout.setVisibility(View.VISIBLE);
+
+        getReadyText.setText("Done!");
     }
 
-    CountDownTimer exercisesMediumModeCountdown = new CountDownTimer(Common.TIME_LIMIT_MEDIUM,1000) {
-        @Override
-        public void onTick(long l) {
-            txtTimer.setText(""+(l/1000));
-
-        }
-
-        @Override
-        public void onFinish() {
-            if(ex_id<List.size()-1)
-            {
-                ex_id++;
-                progressBar.setProgress(ex_id);
-                txtTimer.setText("");
-
-                setExercisesInfo(ex_id);
-//                btnStart.setText("Start");
-
-            }
-            else
-            {
-                showFinished();
-            }
-
-        }
-    };
-    CountDownTimer exercisesEasyModeCountdown = new CountDownTimer(Common.TIME_LIMIT_EASY,1000) {
-        @Override
-        public void onTick(long l) {
-            txtTimer.setText(""+(l/1000));
-
-        }
-
-        @Override
-        public void onFinish() {
-            if(ex_id<List.size()-1)
-            {
-                ex_id++;
-                progressBar.setProgress(ex_id);
-                txtTimer.setText("");
-
-                setExercisesInfo(ex_id);
-//                btnStart.setText("Start");
-
-            }
-            else
-            {
-                showFinished();
-            }
-
-        }
-    };
-    CountDownTimer exercisesHardModeCountdown = new CountDownTimer(Common.TIME_LIMIT_HARD,1000) {
-        @Override
-        public void onTick(long l) {//        babyAppDB.saveDay(""+ Calendar.getInstance().getTimeInMillis());
-
-            txtTimer.setText(""+(l/1000));
-
-        }
-
-        @Override
-        public void onFinish() {
-            if(ex_id<List.size()-1)
-            {
-                ex_id++;
-                progressBar.setProgress(ex_id);
-                txtTimer.setText("");
-
-                setExercisesInfo(ex_id);
-//                btnStart.setText("Start");
-
-            }
-            else
-            {
-                showFinished();
-            }
-
-        }
-    };
-    CountDownTimer resetTimeCountdown = new CountDownTimer(5000,1000) {
-        @Override
-        public void onTick(long l) {
-            txtCountDown.setText(""+(l/1000));
-
-        }
-
-        @Override
-        public void onFinish() {
-            setExercisesInfo(ex_id);
-            showExercises();
-
-        }
-    };
-
-
-
-
-
-    private void setExercisesInfo(int id) {
-        ex_image.setImageResource(List.get(id).getImage_id());
-        ex_name.setText(List.get(id).getName());
+    private void setExerciseInformation(int exerciseId) {
+        ex_image.setImageResource(List.get(ex_id).getImage_id());
+        exerciseName.setText(List.get(exerciseId).getName());
 
         ex_image.setVisibility(View.VISIBLE);
-        btnStart.setVisibility(View.VISIBLE);
-        txtTimer.setVisibility(View.VISIBLE);
+        startButton.setVisibility(View.VISIBLE);
+        timerText.setVisibility(View.VISIBLE);
 
-        layoutGetReady.setVisibility(View.INVISIBLE);
+        getReadyLayout.setVisibility(View.INVISIBLE);
     }
-
     private void initData() {
-        List.add(new Exercises(R.drawable.a2, "first"));
-        List.add(new Exercises(R.drawable.a3, "second"));
-        List.add(new Exercises(R.drawable.a3, "third"));
-        List.add(new Exercises(R.drawable.a3, "fourth"));
-        List.add(new Exercises(R.drawable.a3, "fifth"));
+        List.add(new Exercises(R.drawable.exercise1, "1. exercise"));
+        List.add(new Exercises(R.drawable.exercise2, "2. exercise"));
+        List.add(new Exercises(R.drawable.exercise1, "3. exercise"));
+        List.add(new Exercises(R.drawable.exercise2, "4. exercise"));
+        List.add(new Exercises(R.drawable.exercise1, "5. exercise"));
+
+
     }
 
 

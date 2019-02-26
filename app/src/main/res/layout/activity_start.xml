@@ -4,126 +4,117 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ScheduleActivity"
-    android:background="@color/colorActivityBackground"
+    android:background="@color/mainactiv">
+<include layout="@layout/toolbar" />
 
-    >
+
+
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/progress_bar"
+        android:text="Exercise_name"
+        android:textColor="@color/colorPrimary"
+        android:textSize="24sp" />
+
 
     <ProgressBar
-        android:id="@+id/progressBar"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_width="300dp"
-        android:layout_height="20dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="204dp"
-        android:indeterminate="false" />
-
-
-    <TextView
-        android:id="@+id/title2"
-        android:layout_width="300dp"
-        android:layout_height="55dp"
-        android:layout_below="@+id/progressBar"
-        android:layout_marginTop="-200dp"
-        android:text="Name Of Exercise"
-        android:textColor="@color/cardview_light_background"
-        android:textSize="25sp" />
-    <TextView
-        android:id="@+id/txtDone"
-        android:textSize="30sp"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="204dp"
-        android:layout_above="@+id/detail_image"
-        android:layout_alignParentRight="true"
-        android:layout_width="wrap_content"
+        android:id="@+id/progress_bar"
+        android:layout_below="@+id/toolbar"
+        android:indeterminate="false"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="18 done"
-        android:textColor="@color/cardview_light_background" />
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
 
     <ImageView
-        android:layout_width="300dp"
-        android:layout_height="200dp"
-        android:id="@+id/detail_imageS"
+        android:id="@+id/image_detail"
+        android:src="@drawable/exercise1"
         android:layout_centerInParent="true"
-        android:src="@mipmap/ic_launcher"/>
+        android:layout_width="300dp"
+        android:layout_height="200dp" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/layout_getReady"
+        android:visibility="invisible"
+        android:id="@+id/get_ready_layout"
         android:layout_centerInParent="true"
-        android:visibility="invisible">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/txtGetReady"
-            android:text="Get Ready"
+            android:id="@+id/get_ready_text"
+            android:text=""
             android:textSize="30sp"
             android:textStyle="bold"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/cardview_light_background"/>
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/txtTimer"
-            android:text="5"
-            android:textSize="30sp"
+            android:id="@+id/countdown_text"
+            android:text=""
+            android:textSize="50sp"
             android:textStyle="bold"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal"
+            android:textAlignment="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
-
-    <TextView
-        android:id="@+id/txtCountdown"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:layout_above="@+id/layout_buttons"
-        android:layout_centerInParent="true"
-        android:background="@color/colorActivityBackground"
-        android:textAlignment="center"
-        android:textSize="30sp" />
     <LinearLayout
-        android:id="@+id/layout_buttons"
-        android:layout_alignParentBottom="true"
+        android:id="@+id/btn_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorActivityBackground"
+        android:layout_alignParentBottom="true"
         android:orientation="vertical">
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2">
-    <Button
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="6dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnStart2"
-        android:text="start"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="8dp"
-        android:layout_centerHorizontal="true"/>
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
 
-    <Button
-        android:id="@+id/btnNext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
 
-        android:layout_marginBottom="2dp"
-        android:text=">" />
+            <Button
+                android:id="@+id/btnPrev"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/btn_prev" />
+            <Button
+                android:id="@+id/btnStop"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/btn_stop" />
+
+            <Button
+                android:id="@+id/start_button"
+                android:layout_width="180dp"
+                android:layout_height="50dp"
+                android:background="@drawable/btn_start_sa" />
+
+            <Button
+                android:id="@+id/btnNext"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/btn_next" />
+
         </LinearLayout>
-
     </LinearLayout>
 
+
+    <TextView
+        android:id="@+id/timer"
+        android:text=""
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="35sp"
+        android:layout_above="@id/btn_layout"
+        android:layout_alignParentLeft="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>
