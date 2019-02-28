@@ -1,5 +1,6 @@
 package com.example.babyapp_v2;
 
+import android.content.Intent;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,22 +19,28 @@ import java.util.List;
 
 public class StartActivity extends AppCompatActivity {
 
-    private Button startButton, btnNext, btnPrev, btnStop;
+    private Button startButton, btnNext, btnPrev, btnStop, btnEnd;
 
     private ImageView ex_image;
 
-    private TextView getReadyText, timerText, exerciseName;
+    private TextView getReadyText, timerText, exerciseName, txtDone, txtLeft;
 
     private ProgressBar progressBar;
 
     private LinearLayout getReadyLayout;
 
     private int ex_id = 0;
+    private boolean isPaused = false;
+    private boolean isCanceled = false;
+    private long timeRemaining = 0;
 
     List<Exercises> List = new ArrayList<>();
+    int left = 5;
+    int done = 0;
 
 
     BabyAppDB babyAppDB;
+
 
 
     CountDownTimer exerciseEasyModeCountDown = new CountDownTimer(Common.TIME_LIMIT_EASY, 1000) {
@@ -55,6 +62,15 @@ public class StartActivity extends AppCompatActivity {
             } else {
                 showDone();
             }
+            if (done>5)
+                done=5;
+            done++;
+            txtDone.setText(done + " Done");
+            left--;
+            if (left < 0)
+                left = 0;
+            txtLeft.setText(left + " Left");
+            startButton.setText("BEGIN");
         }
     };
 
@@ -100,7 +116,7 @@ public class StartActivity extends AppCompatActivity {
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
@@ -120,17 +136,22 @@ public class StartActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         getReadyLayout = (LinearLayout) findViewById(R.id.get_ready_layout);
+        txtDone = findViewById(R.id.txtDone);
+        txtLeft = findViewById(R.id.txtLeft);
+
 
         // Set data
         progressBar.setMax(List.size());
 
         setExerciseInformation(ex_id);
+        txtLeft.setText(left + " Left");
 
         btnNext = findViewById(R.id.btnNext);
         btnStop = findViewById(R.id.btnStop);
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startButton.setText("Begin");
                 timerText.setVisibility(View.INVISIBLE);
                 if (babyAppDB.getSettingMode() == 0) {
                     exerciseEasyModeCountDown.cancel();
@@ -204,9 +225,106 @@ public class StartActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showExercises();
-                timerText.setVisibility(View.VISIBLE);
+                if (startButton.getText().toString().toLowerCase().equals("begin")) {
+                    showExercises();
+                    timerText.setVisibility(View.VISIBLE);
+                    startButton.setText("PAUSE");
+                    isPaused = false;
+                    isCanceled = false;
+                    CountDownTimer timer = new CountDownTimer(Common.TIME_LIMIT_EASY,1000) {
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+                            if (isPaused||isCanceled){
+                                cancel();
+                            }
+                            else{
+                                timerText.setText(""+millisUntilFinished/1000);
+                                timeRemaining = millisUntilFinished;
+                            }
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            if (ex_id < List.size() - 1) {
+                                ex_id++;
+
+                                progressBar.setProgress(ex_id);
+
+                                timerText.setText("");
+
+                                setExerciseInformation(ex_id);
+                            } else {
+                                showDone();
+                            }
+                            if (done>5)
+                                done=5;
+                            done++;
+                            txtDone.setText(done + " Done");
+                            left--;
+                            if (left < 0)
+                                left = 0;
+                            txtLeft.setText(left + " Left");
+                            startButton.setText("BEGIN");
+                        }
+                    }.start();
+
+
+                }
+                else if (startButton.getText().toString().toLowerCase().equals("pause")){
+                    startButton.setText("Resume");
+                    isPaused = true;
+
+                }
+                else if (startButton.getText().toString().toLowerCase().equals("resume")){
+                    isPaused = false;
+                    isCanceled = false;
+                    long millisInFuture = timeRemaining;
+                    new CountDownTimer(millisInFuture,1000){
+                        public void onTick(long millisInFinished){
+                            startButton.setText("Pause");
+                            if(isPaused || isCanceled){
+                                cancel();
+                            }
+                            else {
+                                timerText.setText("" + millisInFinished / 1000);
+                                timeRemaining = millisInFinished;
+                            }
+                        }
+
+
+                        @Override
+                        public void onFinish() {
+                            if (ex_id < List.size() - 1) {
+                                ex_id++;
+
+                                progressBar.setProgress(ex_id);
+
+                                timerText.setText("");
+
+                                setExerciseInformation(ex_id);
+                            } else {
+                                showDone();
+                            }
+                            if (done>5)
+                                done=5;
+                            done++;
+                            txtDone.setText(done + " Done");
+                            left--;
+                            if (left < 0)
+                                left = 0;
+                            txtLeft.setText(left + " Left");
+                            startButton.setText("BEGIN");
+                        }
+                    }.start();
+                }
             }
+        });
+        btnEnd = findViewById(R.id.btnEnd);
+        btnEnd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StartActivity.this, MainActivity.class);
+                startActivity(intent);}
         });
     }
 
@@ -215,17 +333,7 @@ public class StartActivity extends AppCompatActivity {
         if (ex_id < List.size()) {
             ex_image.setVisibility(View.VISIBLE);
             startButton.setVisibility(View.VISIBLE);
-
             getReadyLayout.setVisibility(View.INVISIBLE);
-
-            if (babyAppDB.getSettingMode() == 0) {
-                exerciseEasyModeCountDown.start();
-            } else if (babyAppDB.getSettingMode() == 1) {
-                exerciseMediumModeCountDown.start();
-            } else if (babyAppDB.getSettingMode() == 2) {
-                exerciseHardModeCountDown.start();
-            }
-
             ex_image.setImageResource(List.get(ex_id).getImage_id());
             exerciseName.setText(List.get(ex_id).getName());
         } else {
@@ -242,10 +350,12 @@ public class StartActivity extends AppCompatActivity {
         btnNext.setVisibility(View.INVISIBLE);
         btnPrev.setVisibility(View.INVISIBLE);
         btnStop.setVisibility(View.INVISIBLE);
+        txtLeft.setVisibility(View.INVISIBLE);
+        txtDone.setVisibility(View.INVISIBLE);
 
         getReadyLayout.setVisibility(View.VISIBLE);
 
-        getReadyText.setText("Done!");
+        getReadyText.setText("CONGRATULATIONS!");
     }
 
     private void setExerciseInformation(int exerciseId) {
